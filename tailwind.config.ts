@@ -8,9 +8,7 @@ export default {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      screens: { "2xl": "1400px" },
     },
     extend: {
       colors: {
@@ -47,6 +45,22 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        slide: {
+          bg: "hsl(var(--slide-bg))",
+          "bg-soft": "hsl(var(--slide-bg-soft))",
+          "bg-light": "hsl(var(--slide-bg-light))",
+          fg: "hsl(var(--slide-fg))",
+          "fg-muted": "hsl(var(--slide-fg-muted))",
+          "fg-dim": "hsl(var(--slide-fg-dim))",
+          "fg-light": "hsl(var(--slide-fg-light))",
+          "fg-light-muted": "hsl(var(--slide-fg-light-muted))",
+          primary: "hsl(var(--slide-primary))",
+          "primary-soft": "hsl(var(--slide-primary-soft))",
+          "primary-glow": "hsl(var(--slide-primary-glow))",
+          violet: "hsl(var(--slide-violet))",
+          amber: "hsl(var(--slide-amber))",
+          rose: "hsl(var(--slide-rose))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -64,22 +78,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
-        "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
-        },
-        "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
-        },
+        "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },
+        "accordion-up": { from: { height: "var(--radix-accordion-content-height)" }, to: { height: "0" } },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
