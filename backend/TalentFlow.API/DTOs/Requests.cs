@@ -38,8 +38,6 @@ public record CreateTaskRequest(
 
 public record CreateSubmissionRequest(string Summary, string? Link);
 
-public record SelectTop3Request(List<SubmissionRank> Rankings);
-public record SubmissionRank(string Id, int Rank);
 
 public record CreateDecisionRequest(
     string TalentId,

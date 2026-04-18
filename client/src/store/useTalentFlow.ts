@@ -101,7 +101,6 @@ interface TalentFlowState {
 
   // Mentor actions
   createTask: (data: { title: string; brief: string; reward: string; industry: string; dueAt: string }) => Promise<void>;
-  selectTopThree: (taskId: string, top: { id: string; rank: 1 | 2 | 3 }[]) => Promise<void>;
   acceptTalent: (talentId: string, companyId: string, taskId?: string) => Promise<void>;
   rejectTalent: (talentId: string, companyId: string, opts: { tip: string; note?: string; taskId?: string }) => Promise<void>;
 
@@ -214,25 +213,6 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
   createTask: async (data) => {
     const dto = await api.tasks.create(data);
     set((s) => ({ tasks: [mapTask(dto), ...s.tasks] }));
-  },
-
-  selectTopThree: async (taskId, top) => {
-    await api.tasks.selectTop3(taskId, top);
-    // Refetch affected data since backend creates badges and closes the task
-    const [updatedTasks, submissions, talents] = await Promise.all([
-      api.tasks.getAll(),
-      api.tasks.getSubmissions(taskId),
-      api.talents.getAll(),
-    ]);
-    const myId = get().talents.find((t) => t.isMe)?.id;
-    set((s) => ({
-      tasks: updatedTasks.map(mapTask),
-      submissions: [
-        ...s.submissions.filter((x) => x.taskId !== taskId),
-        ...submissions.map(mapSubmission),
-      ],
-      talents: talents.map((t) => mapTalent(t, t.id === myId || undefined)),
-    }));
   },
 
   acceptTalent: async (talentId, companyId, taskId) => {

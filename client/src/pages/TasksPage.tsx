@@ -13,9 +13,11 @@ const INDUSTRIES = ["IT & Technologie", "Marketing", "Prawo", "Hotelarstwo", "Ra
 
 /** Lists battle tasks. Same page used by both roles; differs in framing. */
 const TasksPage = () => {
-  const tasks = useTalentFlow((s) => s.tasks);
+  const allTasks = useTalentFlow((s) => s.tasks);
+  const myCompanyId = useTalentFlow((s) => s.companies.find((c) => c.isMe)?.id);
   const submissions = useTalentFlow((s) => s.submissions);
   const { role } = useRole();
+  const tasks = role === "mentor" ? allTasks.filter((t) => t.companyId === myCompanyId) : allTasks;
   const [createOpen, setCreateOpen] = useState(false);
   const [industryFilter, setIndustryFilter] = useState<string | null>(null);
 

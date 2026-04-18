@@ -39,12 +39,12 @@ const DecisionsPage = () => {
     });
   };
 
-  const getDecision = (talentId: string) =>
-    myDecisions.find((d) => d.talentId === talentId);
+  const getDecision = (talentId: string, taskId: string) =>
+    myDecisions.find((d) => d.talentId === talentId && d.taskId === taskId);
 
   const totalPending = myTasks.reduce((sum, task) => {
     const subs = allSubmissions.filter((s) => s.taskId === task.id);
-    return sum + subs.filter((s) => !getDecision(s.talentId)).length;
+    return sum + subs.filter((s) => !getDecision(s.talentId, task.id)).length;
   }, 0);
 
   return (
@@ -117,7 +117,7 @@ const DecisionsPage = () => {
                   {taskSubs.map((sub) => {
                     const talent = allTalents.find((t) => t.id === sub.talentId);
                     if (!talent) return null;
-                    const decision = getDecision(talent.id);
+                    const decision = getDecision(talent.id, task.id);
 
                     return (
                       <Card

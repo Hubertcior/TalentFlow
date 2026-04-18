@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Trophy, Clock, Star, CheckCircle2, ExternalLink, Lock } from "lucide-react";
+import { ArrowLeft, Clock, Star, CheckCircle2, ExternalLink, Lock, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -24,14 +24,10 @@ const TaskDetailPage = () => {
   const company = useTalentFlow((s) => s.companies.find((c) => c.id === task?.companyId));
   const me = useTalentFlow((s) => s.talents.find((t) => t.isMe));
   const submitToTask = useTalentFlow((s) => s.submitToTask);
-  const selectTopThree = useTalentFlow((s) => s.selectTopThree);
 
   // Submission form
   const [summary, setSummary] = useState("");
   const [link, setLink] = useState("");
-
-  // Top-3 ranking by mentor
-  const [picks, setPicks] = useState<Record<string, 1 | 2 | 3 | null>>({});
 
   if (!task) {
     return (
@@ -46,7 +42,6 @@ const TaskDetailPage = () => {
   const isOwner = company?.isMe;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSelectingTop, setIsSelectingTop] = useState(false);
 
   const handleSubmit = async () => {
     if (summary.trim().length < 10) {
@@ -63,34 +58,6 @@ const TaskDetailPage = () => {
       toast.error("Błąd: " + (err instanceof Error ? err.message : String(err)));
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleSelectTop = async () => {
-    const top = Object.entries(picks)
-      .filter(([, r]) => r != null)
-      .map(([id, r]) => ({ id, rank: r as 1 | 2 | 3 }));
-
-    const ranks = top.map((t) => t.rank);
-    if (new Set(ranks).size !== ranks.length) {
-      toast.error("Każda pozycja (1, 2, 3) może być przyznana tylko raz");
-      return;
-    }
-    if (top.length === 0) {
-      toast.error("Wybierz co najmniej jednego zwycięzcę");
-      return;
-    }
-
-    setIsSelectingTop(true);
-    try {
-      await selectTopThree(task.id, top);
-      toast.success("Top 3 wybrane!", {
-        description: "Odznaki Verified by Mentor zostały nadane.",
-      });
-    } catch (err) {
-      toast.error("Błąd: " + (err instanceof Error ? err.message : String(err)));
-    } finally {
-      setIsSelectingTop(false);
     }
   };
 
@@ -193,14 +160,7 @@ const TaskDetailPage = () => {
           {/* All submissions — visible only to mentors */}
           {role === "mentor" && (
           <Card className="elevated p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold">Zgłoszenia ({subs.length})</h2>
-              {isOwner && task.status !== "closed" && (
-                <Button size="sm" onClick={handleSelectTop} disabled={isSelectingTop} className="gap-2">
-                  <Trophy size={14} /> {isSelectingTop ? "Zapisuję…" : "Zatwierdź Top 3"}
-                </Button>
-              )}
-            </div>
+            <h2 className="text-lg font-bold mb-4">Zgłoszenia ({subs.length})</h2>
 
             {subs.length === 0 && (
               <p className="text-sm text-muted-foreground">Brak zgłoszeń.</p>
@@ -210,16 +170,13 @@ const TaskDetailPage = () => {
               {subs.map((s) => {
                 const author = talents.find((t) => t.id === s.talentId);
                 if (!author) return null;
-                const currentRank = picks[s.id] ?? s.rank ?? null;
 
                 return (
                   <li
                     key={s.id}
                     className={cn(
                       "rounded-lg border p-4 transition",
-                      currentRank
-                        ? "bg-violet-soft/30 border-violet/50"
-                        : "bg-surface border-border"
+                      s.rank ? "bg-violet-soft/30 border-violet/50" : "bg-surface border-border"
                     )}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -241,30 +198,11 @@ const TaskDetailPage = () => {
                         </div>
                       </div>
 
-                      {/* Rank picker (mentor + owner) or rank badge */}
-                      {role === "mentor" && isOwner && task.status !== "closed" ? (
-                        <div className="flex gap-1 shrink-0">
-                          {[1, 2, 3].map((r) => (
-                            <button
-                              key={r}
-                              type="button"
-                              onClick={() => setPicks((p) => ({ ...p, [s.id]: currentRank === r ? null : (r as 1 | 2 | 3) }))}
-                              className={cn(
-                                "w-8 h-8 rounded-full text-xs font-bold border transition",
-                                currentRank === r
-                                  ? "bg-violet text-foreground border-violet"
-                                  : "border-border text-muted-foreground hover:border-violet/50 hover:text-foreground"
-                              )}
-                            >
-                              {r}
-                            </button>
-                          ))}
-                        </div>
-                      ) : s.rank ? (
-                        <Badge className="seal-verified text-foreground border-0 gap-1">
+                      {s.rank && (
+                        <Badge className="seal-verified text-foreground border-0 gap-1 shrink-0">
                           <Star size={10} fill="currentColor" /> Top {s.rank}
                         </Badge>
-                      ) : null}
+                      )}
                     </div>
                   </li>
                 );

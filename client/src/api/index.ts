@@ -189,12 +189,6 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
-
-    selectTop3: (taskId: string, rankings: { id: string; rank: number }[]) =>
-      apiFetch<void>(`/api/tasks/${taskId}/top3`, {
-        method: "POST",
-        body: JSON.stringify({ rankings }),
-      }),
   },
 
   decisions: {
