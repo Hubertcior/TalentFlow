@@ -45,19 +45,14 @@ const TaskDetailPage = () => {
   const mySubmission = subs.find((s) => s.talentId === me?.id);
   const isOwner = company?.isMe;
 
-<<<<<<< HEAD
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSelectingTop, setIsSelectingTop] = useState(false);
 
   const handleSubmit = async () => {
-=======
-  const handleSubmit = () => {
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
     if (summary.trim().length < 10) {
       toast.error("Opis musi mieć co najmniej 10 znaków");
       return;
     }
-<<<<<<< HEAD
     setIsSubmitting(true);
     try {
       await submitToTask(task.id, summary.trim(), link.trim() || undefined);
@@ -72,15 +67,6 @@ const TaskDetailPage = () => {
   };
 
   const handleSelectTop = async () => {
-=======
-    submitToTask(task.id, summary.trim(), link.trim() || undefined);
-    toast.success("Zgłoszenie wysłane!", { description: "Mentor zobaczy Twoje rozwiązanie." });
-    setSummary("");
-    setLink("");
-  };
-
-  const handleSelectTop = () => {
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
     const top = Object.entries(picks)
       .filter(([, r]) => r != null)
       .map(([id, r]) => ({ id, rank: r as 1 | 2 | 3 }));
@@ -95,7 +81,6 @@ const TaskDetailPage = () => {
       return;
     }
 
-<<<<<<< HEAD
     setIsSelectingTop(true);
     try {
       await selectTopThree(task.id, top);
@@ -107,12 +92,6 @@ const TaskDetailPage = () => {
     } finally {
       setIsSelectingTop(false);
     }
-=======
-    selectTopThree(task.id, top);
-    toast.success("Top 3 wybrane!", {
-      description: "Odznaki Verified by Mentor zostały nadane.",
-    });
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   };
 
   const dueDate = new Date(task.dueAt);
@@ -180,13 +159,8 @@ const TaskDetailPage = () => {
                     className="mt-1"
                   />
                 </div>
-<<<<<<< HEAD
                 <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full">
                   {isSubmitting ? "Wysyłam…" : mySubmission ? "Zaktualizuj zgłoszenie" : "Wyślij zgłoszenie"}
-=======
-                <Button onClick={handleSubmit} className="w-full">
-                  {mySubmission ? "Zaktualizuj zgłoszenie" : "Wyślij zgłoszenie"}
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
                 </Button>
               </div>
             </Card>
@@ -198,13 +172,8 @@ const TaskDetailPage = () => {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold">Zgłoszenia ({subs.length})</h2>
               {isOwner && task.status !== "closed" && (
-<<<<<<< HEAD
                 <Button size="sm" onClick={handleSelectTop} disabled={isSelectingTop} className="gap-2">
                   <Trophy size={14} /> {isSelectingTop ? "Zapisuję…" : "Zatwierdź Top 3"}
-=======
-                <Button size="sm" onClick={handleSelectTop} className="gap-2">
-                  <Trophy size={14} /> Zatwierdź Top 3
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
                 </Button>
               )}
             </div>

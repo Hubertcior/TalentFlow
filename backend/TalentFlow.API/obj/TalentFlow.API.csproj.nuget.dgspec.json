@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\prefi\\OneDrive\\Pulpit\\exact-match-magic-79\\backend\\TalentFlow.API\\TalentFlow.API.csproj": {}
+    "C:\\exact-match-magic-79\\backend\\TalentFlow.API\\TalentFlow.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\prefi\\OneDrive\\Pulpit\\exact-match-magic-79\\backend\\TalentFlow.API\\TalentFlow.API.csproj": {
+    "C:\\exact-match-magic-79\\backend\\TalentFlow.API\\TalentFlow.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\prefi\\OneDrive\\Pulpit\\exact-match-magic-79\\backend\\TalentFlow.API\\TalentFlow.API.csproj",
+        "projectUniqueName": "C:\\exact-match-magic-79\\backend\\TalentFlow.API\\TalentFlow.API.csproj",
         "projectName": "TalentFlow.API",
-        "projectPath": "C:\\Users\\prefi\\OneDrive\\Pulpit\\exact-match-magic-79\\backend\\TalentFlow.API\\TalentFlow.API.csproj",
-        "packagesPath": "C:\\Users\\prefi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\prefi\\OneDrive\\Pulpit\\exact-match-magic-79\\backend\\TalentFlow.API\\obj\\",
+        "projectPath": "C:\\exact-match-magic-79\\backend\\TalentFlow.API\\TalentFlow.API.csproj",
+        "packagesPath": "C:\\Users\\ma641\\.nuget\\packages\\",
+        "outputPath": "C:\\exact-match-magic-79\\backend\\TalentFlow.API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\prefi\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\ma641\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -40,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net9.0": {
@@ -76,6 +74,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.15, 9.0.15]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[9.0.15, 9.0.15]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.15, 9.0.15]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.15, 9.0.15]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -84,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

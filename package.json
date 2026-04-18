@@ -1,0 +1,12 @@
+{
+  "name": "talentflow",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"dotnet run --project backend/TalentFlow.API\" \"npm run dev --prefix client\"",
+    "dev:backend": "dotnet run --project backend/TalentFlow.API",
+    "dev:client": "npm run dev --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

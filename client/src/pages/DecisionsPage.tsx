@@ -1,11 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
 import { toast } from "sonner";
 import { useTalentFlow } from "@/store/useTalentFlow";
-=======
-import { useTalentFlow, MY_COMPANY_ID } from "@/store/useTalentFlow";
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +17,6 @@ const DecisionsPage = () => {
   const allSubmissions = useTalentFlow((s) => s.submissions);
   const allTasks = useTalentFlow((s) => s.tasks);
   const acceptTalent = useTalentFlow((s) => s.acceptTalent);
-<<<<<<< HEAD
   const myCompanyId = useTalentFlow((s) => s.companies.find((c) => c.isMe)?.id);
 
   const myTasks = useMemo(
@@ -31,16 +26,6 @@ const DecisionsPage = () => {
   const myDecisions = useMemo(
     () => allDecisions.filter((d) => d.companyId === myCompanyId),
     [allDecisions, myCompanyId],
-=======
-
-  const myTasks = useMemo(
-    () => allTasks.filter((t) => t.companyId === MY_COMPANY_ID),
-    [allTasks],
-  );
-  const myDecisions = useMemo(
-    () => allDecisions.filter((d) => d.companyId === MY_COMPANY_ID),
-    [allDecisions],
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   );
 
   const [rejectFor, setRejectFor] = useState<{ id: string; name: string; taskId?: string } | null>(null);
@@ -189,15 +174,11 @@ const DecisionsPage = () => {
                                   </Button>
                                   <Button
                                     size="sm"
-<<<<<<< HEAD
                                     onClick={() =>
                                       acceptTalent(talent.id, myCompanyId ?? "", task.id).catch((err) =>
                                         toast.error("Błąd: " + (err instanceof Error ? err.message : String(err)))
                                       )
                                     }
-=======
-                                    onClick={() => acceptTalent(talent.id, MY_COMPANY_ID, task.id)}
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
                                     className="gap-1"
                                   >
                                     Zaproś <ArrowRight size={13} />

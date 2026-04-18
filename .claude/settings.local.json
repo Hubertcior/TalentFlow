@@ -6,7 +6,10 @@
       "Bash(sed -i 's/export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}/export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;/' src/components/ui/textarea.tsx)",
       "Bash(sed -i \"s/  plugins: \\\\[require\\(\\\\\"tailwindcss-animate\\\\\"\\)\\\\],/  plugins: [tailwindcssAnimate],/\" tailwind.config.ts)",
       "Bash(sed -i 's/^import type { Config } from \"tailwindcss\";/import type { Config } from \"tailwindcss\";\\\\nimport tailwindcssAnimate from \"tailwindcss-animate\";/' tailwind.config.ts)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npm install *)",
+      "Bash(xargs grep *)",
+      "Bash(xargs ls *)"
     ]
   }
 }

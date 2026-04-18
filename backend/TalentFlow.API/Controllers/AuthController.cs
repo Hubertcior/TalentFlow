@@ -22,7 +22,7 @@ public class AuthController(AppDbContext db, TokenService tokenService) : Contro
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest req)
     {
-        var account = await db.Accounts.FirstOrDefaultAsync(a => a.Email == req.Email);
+        var account = await db.Accounts.FirstOrDefaultAsync(a => a.Email == req.Email.ToLower().Trim());
         if (account is null || !PasswordHelper.Verify(req.Password, account.PasswordHash))
             return Unauthorized("Nieprawidłowy email lub hasło");
 
@@ -58,8 +58,7 @@ public class AuthController(AppDbContext db, TokenService tokenService) : Contro
             var city = req.City?.Trim() ?? "";
             var roleTitle = req.RoleTitle?.Trim() ?? "Talent";
             subtitle = city.Length > 0 ? $"{roleTitle} · {city}" : roleTitle;
-            color = TalentColors[accountId.GetHashCode() % TalentColors.Length];
-            color = color.StartsWith('-') ? TalentColors[0] : color;
+            color = TalentColors[(accountId.GetHashCode() & 0x7FFFFFFF) % TalentColors.Length];
 
             db.Talents.Add(new Talent
             {

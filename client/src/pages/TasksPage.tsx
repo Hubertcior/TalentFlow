@@ -1,14 +1,19 @@
+import { useState } from "react";
 import { useTalentFlow } from "@/store/useTalentFlow";
 import { PageHeader } from "@/components/common/PageHeader";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { useRole } from "@/contexts/RoleContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { CreateTaskDialog } from "@/components/tasks/CreateTaskDialog";
 
 /** Lists battle tasks. Same page used by both roles; differs in framing. */
 const TasksPage = () => {
   const tasks = useTalentFlow((s) => s.tasks);
   const submissions = useTalentFlow((s) => s.submissions);
   const { role } = useRole();
+  const [createOpen, setCreateOpen] = useState(false);
 
   const renderList = (filterFn: (t: typeof tasks[number]) => boolean) => {
     const list = tasks.filter(filterFn);
@@ -38,6 +43,13 @@ const TasksPage = () => {
             ? "Realne mini-zadania od firm. Top 3 dostaje odznakę Verified by Mentor. Zero wymagań wstępnych."
             : "Publikuj wyzwania, oceniaj zgłoszenia, wybieraj Top 3. Ranking automatycznie nadaje odznaki."
         }
+        actions={
+          role === "mentor" ? (
+            <Button onClick={() => setCreateOpen(true)} className="gap-2">
+              <Plus size={15} /> Nowy Battle Task
+            </Button>
+          ) : undefined
+        }
       />
 
       <Tabs defaultValue="open">
@@ -52,6 +64,8 @@ const TasksPage = () => {
         <TabsContent value="closed">{renderList((t) => t.status === "closed")}</TabsContent>
         <TabsContent value="all">{renderList(() => true)}</TabsContent>
       </Tabs>
+
+      <CreateTaskDialog open={createOpen} onOpenChange={setCreateOpen} />
     </div>
   );
 };

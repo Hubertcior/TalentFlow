@@ -10,10 +10,6 @@ import { useRole } from "@/contexts/RoleContext";
 import { useState } from "react";
 import { RejectDialog } from "@/components/decisions/RejectDialog";
 import { toast } from "sonner";
-<<<<<<< HEAD
-=======
-import { MY_COMPANY_ID } from "@/store/useTalentFlow";
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 
 const TalentDetailPage = () => {
   const { id } = useParams();
@@ -21,10 +17,7 @@ const TalentDetailPage = () => {
   const { role } = useRole();
   const talent = useTalentFlow((s) => s.talents.find((t) => t.id === id));
   const acceptTalent = useTalentFlow((s) => s.acceptTalent);
-<<<<<<< HEAD
   const myCompanyId = useTalentFlow((s) => s.companies.find((c) => c.isMe)?.id ?? "");
-=======
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   const [rejectOpen, setRejectOpen] = useState(false);
 
   if (!talent) {
@@ -36,7 +29,6 @@ const TalentDetailPage = () => {
     );
   }
 
-<<<<<<< HEAD
   const handleAccept = async () => {
     try {
       await acceptTalent(talent.id, myCompanyId);
@@ -46,13 +38,6 @@ const TalentDetailPage = () => {
     } catch (err) {
       toast.error("Błąd: " + (err instanceof Error ? err.message : String(err)));
     }
-=======
-  const handleAccept = () => {
-    acceptTalent(talent.id, MY_COMPANY_ID);
-    toast.success(`Wysłano zaproszenie do ${talent.name}`, {
-      description: "15-minutowy quick invite został przesłany na kartę talentu.",
-    });
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   };
 
   return (
