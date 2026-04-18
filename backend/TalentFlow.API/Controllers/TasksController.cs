@@ -82,6 +82,9 @@ public class TasksController(AppDbContext db) : ControllerBase
         var existing = await db.Submissions.FirstOrDefaultAsync(s => s.TaskId == taskId && s.TalentId == talentId);
         if (existing is not null)
         {
+            if (existing.Rank != null)
+                return BadRequest("Zgłoszenie zostało już ocenione i nie można go edytować");
+
             existing.Summary = req.Summary;
             existing.Link = req.Link;
             existing.SubmittedAt = DateTime.UtcNow;

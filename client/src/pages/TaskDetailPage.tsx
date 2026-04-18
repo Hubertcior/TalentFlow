@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Trophy, Clock, Star, CheckCircle2, ExternalLink } from "lucide-react";
+import { ArrowLeft, Trophy, Clock, Star, CheckCircle2, ExternalLink, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -114,8 +114,8 @@ const TaskDetailPage = () => {
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Submit form (talent) */}
-          {role === "talent" && task.status === "open" && (
+          {/* Submit form (talent) — editable only when task is open and submission not yet ranked */}
+          {role === "talent" && task.status === "open" && !mySubmission?.rank && (
             <Card className="elevated p-6">
               <h2 className="text-lg font-bold mb-1">
                 {mySubmission ? "Twoje zgłoszenie" : "Weź udział"}
@@ -162,6 +162,30 @@ const TaskDetailPage = () => {
                 <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full">
                   {isSubmitting ? "Wysyłam…" : mySubmission ? "Zaktualizuj zgłoszenie" : "Wyślij zgłoszenie"}
                 </Button>
+              </div>
+            </Card>
+          )}
+
+          {/* Read-only view when submission has been ranked */}
+          {role === "talent" && mySubmission?.rank && (
+            <Card className="elevated p-6">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-bold">Twoje zgłoszenie</h2>
+                <Badge className="seal-verified text-foreground border-0 gap-1">
+                  <Star size={10} fill="currentColor" /> Top {mySubmission.rank}
+                </Badge>
+              </div>
+              <div className="rounded-lg bg-violet-soft/30 ring-1 ring-violet/30 p-4 mb-3">
+                <p className="text-sm">{mySubmission.summary}</p>
+                {mySubmission.link && (
+                  <a href={mySubmission.link} target="_blank" rel="noreferrer" className="text-primary text-sm flex items-center gap-1 mt-2 hover:underline">
+                    {mySubmission.link} <ExternalLink size={12} />
+                  </a>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Lock size={12} />
+                Zgłoszenie zostało ocenione przez mentora — edycja jest zablokowana.
               </div>
             </Card>
           )}

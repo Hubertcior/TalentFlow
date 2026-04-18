@@ -8,6 +8,8 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Availability } from "@/types/domain";
 
+const INDUSTRIES = ["IT & Technologie", "Marketing", "Prawo", "Hotelarstwo", "Rachunkowość", "Budownictwo", "Finanse", "E-commerce", "Inne"];
+
 const AVAILABILITY_OPTIONS: { value: Availability | "all"; label: string }[] = [
   { value: "all", label: "Wszyscy" },
   { value: "now", label: "Dostępni teraz" },
@@ -20,6 +22,7 @@ const TalentsPage = () => {
 
   const [query, setQuery] = useState("");
   const [interestFilter, setInterestFilter] = useState<string | null>(null);
+  const [industryFilter, setIndustryFilter] = useState<string | null>(null);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [availability, setAvailability] = useState<Availability | "all">("all");
 
@@ -33,6 +36,7 @@ const TalentsPage = () => {
     if (verifiedOnly && t.badges.length === 0) return false;
     if (availability !== "all" && t.availability !== availability) return false;
     if (interestFilter && !t.interests.some((i) => i === interestFilter)) return false;
+    if (industryFilter && t.industry !== industryFilter) return false;
     if (query) {
       const q = query.toLowerCase();
       if (
@@ -42,7 +46,7 @@ const TalentsPage = () => {
       ) return false;
     }
     return true;
-  }), [talents, verifiedOnly, availability, interestFilter, query]);
+  }), [talents, verifiedOnly, availability, interestFilter, industryFilter, query]);
 
   return (
     <div className="px-6 py-8 max-w-7xl mx-auto">
@@ -91,6 +95,36 @@ const TalentsPage = () => {
           >
             ★ Verified by Mentor
           </button>
+        </div>
+
+        {/* Industry filter */}
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
+          <span className="text-xs text-muted-foreground self-center mr-1">Branża:</span>
+          <button
+            onClick={() => setIndustryFilter(null)}
+            className={cn(
+              "px-3 py-1 rounded-full text-xs border transition",
+              !industryFilter
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-surface text-muted-foreground border-border hover:text-foreground"
+            )}
+          >
+            Wszystkie
+          </button>
+          {INDUSTRIES.map((ind) => (
+            <button
+              key={ind}
+              onClick={() => setIndustryFilter(industryFilter === ind ? null : ind)}
+              className={cn(
+                "px-3 py-1 rounded-full text-xs border transition",
+                industryFilter === ind
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-surface text-muted-foreground border-border hover:text-foreground"
+              )}
+            >
+              {ind}
+            </button>
+          ))}
         </div>
 
         {/* Interest filter */}

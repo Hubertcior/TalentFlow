@@ -32,6 +32,7 @@ export interface RegisterData {
   roleTitle?: string;
   city?: string;
   age?: number;
+  talentIndustry?: string;
   companyName?: string;
   companyIndustry?: string;
 }

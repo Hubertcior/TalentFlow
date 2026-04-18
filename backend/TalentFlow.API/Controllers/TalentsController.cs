@@ -20,6 +20,7 @@ public class TalentsController(AppDbContext db) : ControllerBase
         [FromQuery] string? availability,
         [FromQuery] bool? verified,
         [FromQuery] string? interest,
+        [FromQuery] string? industry,
         [FromQuery] string? q)
     {
         var query = db.Talents.Include(t => t.Badges).AsQueryable();
@@ -29,6 +30,9 @@ public class TalentsController(AppDbContext db) : ControllerBase
 
         if (verified == true)
             query = query.Where(t => t.Badges.Any());
+
+        if (!string.IsNullOrEmpty(industry))
+            query = query.Where(t => t.Industry == industry);
 
         var talents = await query.ToListAsync();
 
@@ -72,6 +76,7 @@ public class TalentsController(AppDbContext db) : ControllerBase
         if (req.City is not null) talent.City = req.City;
         if (req.PortfolioUrl is not null) talent.PortfolioUrl = req.PortfolioUrl;
         if (req.Interests is not null) talent.Interests = JsonSerializer.Serialize(req.Interests);
+        if (req.Industry is not null) talent.Industry = req.Industry;
         if (req.Availability is not null && Enum.TryParse<Availability>(req.Availability, true, out var av))
             talent.Availability = av;
 

@@ -16,7 +16,8 @@ public static class MappingService
         t.Availability.ToString().ToLower(),
         t.PortfolioUrl,
         JsonSerializer.Deserialize<List<string>>(t.Interests) ?? [],
-        t.Badges.Select(b => b.ToDto()).ToList()
+        t.Badges.Select(b => b.ToDto()).ToList(),
+        t.Industry
     );
 
     public static BadgeDto ToDto(this Badge b) => new(

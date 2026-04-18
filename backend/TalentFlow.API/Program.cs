@@ -45,6 +45,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    try { db.Database.ExecuteSqlRaw("ALTER TABLE Talents ADD COLUMN Industry TEXT NOT NULL DEFAULT ''"); } catch { }
     SeedData.Seed(db);
 }
 

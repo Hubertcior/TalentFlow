@@ -71,6 +71,7 @@ public class AuthController(AppDbContext db, TokenService tokenService) : Contro
                 City = city,
                 Availability = Availability.Now,
                 Interests = "[]",
+                Industry = req.TalentIndustry?.Trim() ?? "",
             });
         }
         else

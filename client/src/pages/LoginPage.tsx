@@ -180,6 +180,7 @@ function RegisterForm({ onRegister, onSwitchToLogin }: { onRegister: (d: Registe
   const [roleTitle, setRoleTitle] = useState("");
   const [city, setCity] = useState("");
   const [age, setAge] = useState("");
+  const [talentIndustry, setTalentIndustry] = useState(INDUSTRIES[0]);
   // Mentor extras
   const [companyName, setCompanyName] = useState("");
   const [companyIndustry, setCompanyIndustry] = useState(INDUSTRIES[0]);
@@ -206,6 +207,7 @@ function RegisterForm({ onRegister, onSwitchToLogin }: { onRegister: (d: Registe
         roleTitle: role === "talent" ? roleTitle.trim() || undefined : undefined,
         city: role === "talent" ? city.trim() || undefined : undefined,
         age: role === "talent" && age ? parseInt(age, 10) : undefined,
+        talentIndustry: role === "talent" ? talentIndustry : undefined,
         companyName: role === "mentor" ? companyName.trim() : undefined,
         companyIndustry: role === "mentor" ? companyIndustry : undefined,
       });
@@ -283,6 +285,17 @@ function RegisterForm({ onRegister, onSwitchToLogin }: { onRegister: (d: Registe
             <div className="col-span-2">
               <Label htmlFor="roleTitle">Dziedzina / Headline</Label>
               <Input id="roleTitle" value={roleTitle} onChange={(e) => setRoleTitle(e.target.value)} placeholder="np. Frontend Developer" className="mt-1" />
+            </div>
+            <div className="col-span-2">
+              <Label htmlFor="talentIndustry">Branża</Label>
+              <select
+                id="talentIndustry"
+                value={talentIndustry}
+                onChange={(e) => setTalentIndustry(e.target.value)}
+                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                {INDUSTRIES.map((i) => <option key={i}>{i}</option>)}
+              </select>
             </div>
             <div>
               <Label htmlFor="city">Miasto</Label>

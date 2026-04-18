@@ -25,7 +25,8 @@ public record TalentDto(
     string Availability,
     string? PortfolioUrl,
     List<string> Interests,
-    List<BadgeDto> Badges
+    List<BadgeDto> Badges,
+    string Industry
 );
 
 public record BadgeDto(

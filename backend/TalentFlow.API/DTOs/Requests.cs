@@ -11,6 +11,7 @@ public record RegisterRequest(
     string? RoleTitle,
     string? City,
     int? Age,
+    string? TalentIndustry,
     // Mentor fields
     string? CompanyName,
     string? CompanyIndustry
@@ -23,7 +24,8 @@ public record UpdateTalentRequest(
     string? City,
     string? Availability,
     string? PortfolioUrl,
-    List<string>? Interests
+    List<string>? Interests,
+    string? Industry
 );
 
 public record CreateTaskRequest(

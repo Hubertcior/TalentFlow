@@ -26,6 +26,7 @@ function mapTalent(dto: TalentDto, isMe?: boolean): Talent {
       total: b.total,
       awardedAt: b.awardedAt,
     })),
+    industry: dto.industry,
     isMe,
   };
 }
@@ -90,7 +91,7 @@ interface TalentFlowState {
   resetData: () => void;
 
   // Talent actions
-  updateMyTalent: (patch: Partial<Pick<Talent, "name" | "role" | "bio" | "city" | "availability" | "portfolioUrl">>) => void;
+  updateMyTalent: (patch: Partial<Pick<Talent, "name" | "role" | "bio" | "city" | "availability" | "portfolioUrl" | "industry">>) => void;
   updateMyInterests: (interests: string[]) => Promise<void>;
   setMyAvailability: (a: Availability) => Promise<void>;
   saveProfile: () => Promise<void>;
@@ -184,6 +185,7 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
       portfolioUrl: me.portfolioUrl,
       availability: me.availability,
       interests: me.interests,
+      industry: me.industry,
     });
     set((s) => ({
       talents: s.talents.map((t) => (t.isMe ? { ...mapTalent(dto), isMe: true } : t)),

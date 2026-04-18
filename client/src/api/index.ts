@@ -40,6 +40,7 @@ export interface TalentDto {
   portfolioUrl: string | null;
   interests: string[];
   badges: BadgeDto[];
+  industry: string;
 }
 
 export interface CompanyDto {
@@ -118,6 +119,7 @@ export const api = {
       roleTitle?: string;
       city?: string;
       age?: number;
+      talentIndustry?: string;
       companyName?: string;
       companyIndustry?: string;
     }) =>
@@ -133,11 +135,12 @@ export const api = {
   },
 
   talents: {
-    getAll: (params?: { availability?: string; verified?: boolean; interest?: string; q?: string }) => {
+    getAll: (params?: { availability?: string; verified?: boolean; interest?: string; industry?: string; q?: string }) => {
       const qs = new URLSearchParams();
       if (params?.availability) qs.set("availability", params.availability);
       if (params?.verified != null) qs.set("verified", String(params.verified));
       if (params?.interest) qs.set("interest", params.interest);
+      if (params?.industry) qs.set("industry", params.industry);
       if (params?.q) qs.set("q", params.q);
       const query = qs.toString();
       return apiFetch<TalentDto[]>(`/api/talents${query ? `?${query}` : ""}`);
@@ -153,6 +156,7 @@ export const api = {
       availability?: string;
       portfolioUrl?: string;
       interests?: string[];
+      industry?: string;
     }) =>
       apiFetch<TalentDto>("/api/talents/me", {
         method: "PATCH",

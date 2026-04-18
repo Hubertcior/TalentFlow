@@ -31,6 +31,8 @@ export interface Talent {
   /** Free-text interest tags, e.g. ["marketing cyfrowy", "social media"] */
   interests: string[];
   badges: Badge[];
+  /** Industry category, e.g. "Marketing", "IT & Technologie" */
+  industry: string;
   /** Whether this is the demo user's own card (only one at a time) */
   isMe?: boolean;
 }

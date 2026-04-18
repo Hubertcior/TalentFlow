@@ -34,6 +34,7 @@ public class Talent
     public Availability Availability { get; set; }
     public string? PortfolioUrl { get; set; }
     public string Interests { get; set; } = "[]";
+    public string Industry { get; set; } = "";
     public ICollection<Badge> Badges { get; set; } = new List<Badge>();
 }
 

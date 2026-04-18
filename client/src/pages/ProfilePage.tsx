@@ -16,6 +16,8 @@ const AVAILABILITY_LABEL = {
   busy: "Zajęty/a",
 };
 
+const INDUSTRIES = ["IT & Technologie", "Marketing", "Prawo", "Hotelarstwo", "Rachunkowość", "Budownictwo", "Finanse", "E-commerce", "Inne"];
+
 const ProfilePage = () => {
   const me = useTalentFlow((s) => s.talents.find((t) => t.isMe))!;
   const update = useTalentFlow((s) => s.updateMyTalent);
@@ -125,6 +127,17 @@ const ProfilePage = () => {
               placeholder="https://…"
               className="mt-1"
             />
+          </div>
+          <div>
+            <Label>Branża</Label>
+            <select
+              value={me.industry}
+              onChange={(e) => update({ industry: e.target.value })}
+              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="">— nie podano —</option>
+              {INDUSTRIES.map((i) => <option key={i}>{i}</option>)}
+            </select>
           </div>
           <div className="sm:col-span-2">
             <Label>O mnie</Label>
