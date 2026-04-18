@@ -198,6 +198,8 @@ export const selectCompanyScores = (state: TalentFlowState): CompanyScore[] => {
   });
 
   rows.sort((a, b) => b.score - a.score);
-  if (rows.length > 0 && rows[0].totalDecisions > 0) rows[0].isTopEmployer = true;
+  if (rows.length > 0 && rows[0].totalDecisions > 0) {
+    rows[0] = { ...rows[0], isTopEmployer: true };
+  }
   return rows;
 };
