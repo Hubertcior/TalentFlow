@@ -3,8 +3,19 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { RoleProvider } from "@/contexts/RoleContext";
+import { AppLayout } from "@/components/layout/AppLayout";
+
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import TalentsPage from "./pages/TalentsPage.tsx";
+import TalentDetailPage from "./pages/TalentDetailPage.tsx";
+import TasksPage from "./pages/TasksPage.tsx";
+import TaskDetailPage from "./pages/TaskDetailPage.tsx";
+import InboxPage from "./pages/InboxPage.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
+import EmployersPage from "./pages/EmployersPage.tsx";
+import DecisionsPage from "./pages/DecisionsPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -13,13 +24,25 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <RoleProvider>
+        <BrowserRouter>
+          <AppLayout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/talents" element={<TalentsPage />} />
+              <Route path="/talents/:id" element={<TalentDetailPage />} />
+              <Route path="/tasks" element={<TasksPage />} />
+              <Route path="/tasks/:id" element={<TaskDetailPage />} />
+              <Route path="/inbox" element={<InboxPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/employers" element={<EmployersPage />} />
+              <Route path="/decisions" element={<DecisionsPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AppLayout>
+        </BrowserRouter>
+      </RoleProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
