@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTalentFlow, selectCompanyScores, MY_COMPANY_ID } from "@/store/useTalentFlow";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -8,21 +9,22 @@ import { TalentCard } from "@/components/talent/TalentCard";
 
 /** Mentor's home: pipeline metrics, talent picks, tasks awaiting judgement. */
 export const MentorDashboard = () => {
-  const talents = useTalentFlow((s) => s.talents.filter((t) => !t.isMe));
+  const allTalents = useTalentFlow((s) => s.talents);
   const tasks = useTalentFlow((s) => s.tasks);
   const submissions = useTalentFlow((s) => s.submissions);
   const decisions = useTalentFlow((s) => s.decisions);
   const scores = useTalentFlow(selectCompanyScores);
 
+  const talents = useMemo(() => allTalents.filter((t) => !t.isMe), [allTalents]);
   const myCompanyScore = scores.find((s) => s.companyId === MY_COMPANY_ID);
   const myDecisions = decisions.filter((d) => d.companyId === MY_COMPANY_ID);
   const myTasks = tasks.filter((t) => t.companyId === MY_COMPANY_ID);
   const judging = myTasks.find((t) => t.status === "judging") ?? myTasks.find((t) => t.status === "open");
 
-  // Top picks: talents with most badges + matching availability
-  const topPicks = [...talents]
-    .sort((a, b) => b.badges.length - a.badges.length)
-    .slice(0, 3);
+  const topPicks = useMemo(
+    () => [...talents].sort((a, b) => b.badges.length - a.badges.length).slice(0, 3),
+    [talents],
+  );
 
   return (
     <div className="px-6 py-8 max-w-7xl mx-auto">
@@ -115,20 +117,16 @@ export const MentorDashboard = () => {
               {Math.round((myCompanyScore?.feedbackRate ?? 0) * 100)}%
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              Procent odrzuconych aplikacji z konstruktywną wskazówką.
+              Procent odrzuceń z konstruktywną wskazówką.
             </p>
             <div className="mt-4 pt-4 border-t border-border space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Czas odpowiedzi</span>
                 <span className="font-semibold tabular-nums">~{Math.round(myCompanyScore?.avgResponseHours ?? 0)}h</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Ocena przydatności</span>
-                <span className="font-semibold tabular-nums">{(myCompanyScore?.avgUsefulness ?? 0).toFixed(1)}/5</span>
-              </div>
             </div>
             <Button asChild variant="outline" className="w-full mt-4">
-              <Link to="/decisions">Panel decyzji</Link>
+              <Link to="/decisions">Zarządzaj zgłoszeniami</Link>
             </Button>
           </Card>
         </div>

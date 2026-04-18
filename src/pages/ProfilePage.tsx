@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -12,37 +11,32 @@ import { toast } from "sonner";
 import { ShieldOff, Plus, X } from "lucide-react";
 
 const AVAILABILITY_LABEL = {
-  now: "Dostępna teraz",
+  now: "Dostępny/a teraz",
   soon: "Za 2–4 tygodnie",
-  busy: "Zajęta",
+  busy: "Zajęty/a",
 };
 
 const ProfilePage = () => {
   const me = useTalentFlow((s) => s.talents.find((t) => t.isMe))!;
   const update = useTalentFlow((s) => s.updateMyTalent);
-  const updateSkills = useTalentFlow((s) => s.updateMySkills);
+  const updateInterests = useTalentFlow((s) => s.updateMyInterests);
   const setAvailability = useTalentFlow((s) => s.setMyAvailability);
 
-  const [newSkill, setNewSkill] = useState("");
+  const [newInterest, setNewInterest] = useState("");
 
-  const handleSkillLevel = (idx: number, val: number[]) => {
-    const next = [...me.skills];
-    next[idx] = { ...next[idx], level: val[0] };
-    updateSkills(next);
-  };
-
-  const handleAddSkill = () => {
-    if (!newSkill.trim()) return;
-    if (me.skills.some((s) => s.name.toLowerCase() === newSkill.trim().toLowerCase())) {
-      toast.error("Ta umiejętność już jest na karcie");
+  const handleAddInterest = () => {
+    const trimmed = newInterest.trim();
+    if (!trimmed) return;
+    if (me.interests.some((i) => i.toLowerCase() === trimmed.toLowerCase())) {
+      toast.error("To zainteresowanie już jest na karcie");
       return;
     }
-    updateSkills([...me.skills, { name: newSkill.trim(), level: 5 }]);
-    setNewSkill("");
+    updateInterests([...me.interests, trimmed]);
+    setNewInterest("");
   };
 
-  const handleRemoveSkill = (idx: number) => {
-    updateSkills(me.skills.filter((_, i) => i !== idx));
+  const handleRemoveInterest = (idx: number) => {
+    updateInterests(me.interests.filter((_, i) => i !== idx));
   };
 
   return (
@@ -50,7 +44,7 @@ const ProfilePage = () => {
       <PageHeader
         eyebrow="Twoja karta"
         title="Edytuj profil"
-        description="Pamiętaj — tu nie ma pola 'uczelnia'. Liczy się to co potrafisz."
+        description="Opisz siebie swoimi słowami. Żadnych pól na uczelnię ani certyfikaty — liczy się to, co Cię kręci."
       />
 
       <Card className="elevated p-6 mb-6 bg-amber-soft/20 ring-1 ring-amber/30">
@@ -59,13 +53,14 @@ const ProfilePage = () => {
           <div>
             <p className="text-sm font-semibold">Zero bramek wejściowych</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Karta talentu nie ma pól na uczelnię, certyfikaty czy lata doświadczenia.
-              Algorytm filtruje wyłącznie po umiejętnościach i odznakach Verified by Mentor.
+              Karta talentu nie ma pól na uczelnię, certyfikaty ani lata doświadczenia.
+              Mentorzy widzą Twoje zainteresowania, bio i odznaki — nic więcej.
             </p>
           </div>
         </div>
       </Card>
 
+      {/* Basic info */}
       <Card className="elevated p-6 mb-6">
         <h2 className="text-lg font-bold mb-4">Podstawowe informacje</h2>
         <div className="grid sm:grid-cols-2 gap-4">
@@ -74,11 +69,11 @@ const ProfilePage = () => {
             <Input value={me.name} onChange={(e) => update({ name: e.target.value })} className="mt-1" />
           </div>
           <div>
-            <Label>Headline</Label>
+            <Label>Dziedzina / Headline</Label>
             <Input
               value={me.role}
               onChange={(e) => update({ role: e.target.value })}
-              placeholder="np. UI/UX + Frontend"
+              placeholder="np. Marketing & Komunikacja"
               className="mt-1"
             />
           </div>
@@ -87,7 +82,7 @@ const ProfilePage = () => {
             <Input value={me.city} onChange={(e) => update({ city: e.target.value })} className="mt-1" />
           </div>
           <div>
-            <Label>Portfolio (URL)</Label>
+            <Label>Portfolio / LinkedIn (URL)</Label>
             <Input
               value={me.portfolioUrl ?? ""}
               onChange={(e) => update({ portfolioUrl: e.target.value })}
@@ -101,13 +96,14 @@ const ProfilePage = () => {
               value={me.bio}
               onChange={(e) => update({ bio: e.target.value })}
               className="mt-1 min-h-[80px]"
+              placeholder="Kilka zdań o sobie — co robisz, co Cię napędza, czego szukasz."
             />
           </div>
         </div>
 
         <div className="mt-5">
           <Label>Dostępność</Label>
-          <div className="mt-2 flex gap-2">
+          <div className="mt-2 flex gap-2 flex-wrap">
             {(Object.keys(AVAILABILITY_LABEL) as Array<keyof typeof AVAILABILITY_LABEL>).map((key) => (
               <button
                 key={key}
@@ -126,53 +122,53 @@ const ProfilePage = () => {
         </div>
       </Card>
 
+      {/* Interests */}
       <Card className="elevated p-6 mb-6">
-        <h2 className="text-lg font-bold mb-4">Umiejętności (0–10)</h2>
-        <div className="space-y-5">
-          {me.skills.map((s, idx) => (
-            <div key={s.name}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">{s.name}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold tabular-nums">{s.level}/10</span>
-                  <button
-                    onClick={() => handleRemoveSkill(idx)}
-                    className="text-muted-foreground hover:text-destructive transition"
-                    aria-label="Usuń umiejętność"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              </div>
-              <Slider
-                value={[s.level]}
-                onValueChange={(v) => handleSkillLevel(idx, v)}
-                min={0}
-                max={10}
-                step={1}
-              />
-            </div>
+        <h2 className="text-lg font-bold mb-1">Zainteresowania i obszary</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Napisz co Cię interesuje — branża, umiejętności, tematy. Mentorzy filtrują po tych tagach.
+        </p>
+
+        <div className="flex flex-wrap gap-2 mb-4 min-h-[40px]">
+          {me.interests.map((interest, idx) => (
+            <span
+              key={idx}
+              className="inline-flex items-center gap-1.5 text-sm bg-primary/10 text-primary ring-1 ring-primary/25 rounded-full px-3 py-1"
+            >
+              {interest}
+              <button
+                onClick={() => handleRemoveInterest(idx)}
+                className="text-primary/60 hover:text-primary transition ml-0.5"
+                aria-label="Usuń"
+              >
+                <X size={12} />
+              </button>
+            </span>
           ))}
+          {me.interests.length === 0 && (
+            <p className="text-sm text-muted-foreground italic">Brak zainteresowań — dodaj pierwsze poniżej.</p>
+          )}
         </div>
 
-        <div className="flex gap-2 mt-6 pt-4 border-t border-border">
+        <div className="flex gap-2">
           <Input
-            value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
-            placeholder="Nowa umiejętność…"
+            value={newInterest}
+            onChange={(e) => setNewInterest(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAddInterest()}
+            placeholder="np. marketing cyfrowy, prawo pracy, kuchnia fusion…"
           />
-          <Button onClick={handleAddSkill} variant="outline" className="gap-1 shrink-0">
+          <Button onClick={handleAddInterest} variant="outline" className="gap-1 shrink-0">
             <Plus size={14} /> Dodaj
           </Button>
         </div>
       </Card>
 
+      {/* Badges */}
       <Card className="elevated p-6">
         <h2 className="text-lg font-bold mb-4">Twoje odznaki Verified by Mentor</h2>
         {me.badges.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Brak odznak. Weź udział w Battle Tasks, by zdobyć pierwszą.
+            Brak odznak. Weź udział w zadaniach rekrutacyjnych, by zdobyć pierwszą.
           </p>
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">

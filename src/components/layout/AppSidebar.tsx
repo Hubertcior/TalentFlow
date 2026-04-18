@@ -12,7 +12,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  Home, Users, Swords, Inbox, BarChart3, User, ShieldCheck,
+  Home, Users, Swords, Inbox, BarChart3, User, ClipboardList,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -30,7 +30,7 @@ const MENTOR_NAV: NavItem[] = [
   { title: "Pulpit",          url: "/",          icon: Home },
   { title: "Talenty",         url: "/talents",   icon: Users },
   { title: "Battle Tasks",    url: "/tasks",     icon: Swords },
-  { title: "Anti-Ghosting",   url: "/decisions", icon: ShieldCheck },
+  { title: "Zgłoszenia",      url: "/decisions", icon: ClipboardList },
   { title: "Ranking firm",    url: "/employers", icon: BarChart3 },
 ];
 

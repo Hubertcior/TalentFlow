@@ -5,12 +5,8 @@ interface LogoProps {
   className?: string;
 }
 
-/**
- * The TalentFlow dot-orbit mark from the original deck.
- * 7 dots scattered inside a thin circle, with subtle pulse animation.
- */
+
 export const Logo = ({ size = 200, className }: LogoProps) => {
-  // Dot positions (cx, cy, r) inside a 100x100 viewBox
   const dots = [
     { cx: 65, cy: 28, r: 5 },
     { cx: 80, cy: 50, r: 5.5 },

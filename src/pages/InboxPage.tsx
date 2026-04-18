@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useTalentFlow } from "@/store/useTalentFlow";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card } from "@/components/ui/card";
@@ -7,9 +8,16 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const InboxPage = () => {
-  const me = useTalentFlow((s) => s.talents.find((t) => t.isMe));
-  const decisions = useTalentFlow((s) => s.decisions.filter((d) => d.talentId === me?.id));
+  const meId = useTalentFlow((s) => s.talents.find((t) => t.isMe)?.id);
+  const allDecisions = useTalentFlow((s) => s.decisions);
   const companies = useTalentFlow((s) => s.companies);
+  const decisions = useMemo(
+    () =>
+      allDecisions
+        .filter((d) => d.talentId === meId)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [allDecisions, meId],
+  );
   const rate = useTalentFlow((s) => s.rateDecision);
 
   return (

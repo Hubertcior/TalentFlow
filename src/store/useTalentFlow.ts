@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type {
-  Talent, Company, BattleTask, Submission, Decision, Skill, Availability,
+  Talent, Company, BattleTask, Submission, Decision, Availability,
 } from "@/types/domain";
 import {
   SEED_TALENTS, SEED_COMPANIES, SEED_TASKS, SEED_SUBMISSIONS, SEED_DECISIONS,
@@ -15,7 +15,7 @@ interface TalentFlowState {
 
   // Talent actions
   updateMyTalent: (patch: Partial<Pick<Talent, "name" | "role" | "bio" | "city" | "availability" | "portfolioUrl">>) => void;
-  updateMySkills: (skills: Skill[]) => void;
+  updateMyInterests: (interests: string[]) => void;
   setMyAvailability: (a: Availability) => void;
 
   submitToTask: (taskId: string, summary: string, link?: string) => void;
@@ -25,6 +25,9 @@ interface TalentFlowState {
   selectTopThree: (taskId: string, top: { id: string; rank: 1 | 2 | 3 }[]) => void;
   acceptTalent: (talentId: string, companyId: string, taskId?: string) => void;
   rejectTalent: (talentId: string, companyId: string, opts: { tip: string; note?: string; taskId?: string }) => void;
+
+  // Auth action
+  setActiveUser: (talentId: string | null, companyId: string | null) => void;
 }
 
 const myCompanyId = "c-me";
@@ -41,8 +44,8 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
     talents: s.talents.map((t) => (t.isMe ? { ...t, ...patch } : t)),
   })),
 
-  updateMySkills: (skills) => set((s) => ({
-    talents: s.talents.map((t) => (t.isMe ? { ...t, skills } : t)),
+  updateMyInterests: (interests) => set((s) => ({
+    talents: s.talents.map((t) => (t.isMe ? { ...t, interests } : t)),
   })),
 
   setMyAvailability: (availability) => set((s) => ({
@@ -72,14 +75,12 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
   })),
 
   selectTopThree: (taskId, top) => set((s) => {
-    // Update submissions with new ranks
     const updatedSubs = s.submissions.map((sub) => {
       if (sub.taskId !== taskId) return sub;
       const found = top.find((t) => t.id === sub.id);
       return { ...sub, rank: found?.rank };
     });
 
-    // Award badges to ranked talents (only for tasks owned by my company in this prototype)
     const task = s.tasks.find((t) => t.id === taskId);
     let updatedTalents = s.talents;
     if (task) {
@@ -89,7 +90,6 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
       updatedTalents = s.talents.map((tal) => {
         const winner = winnerSubs.find((w) => w.talentId === tal.id);
         if (!winner || !company) return tal;
-        // Skip if already badged for this task (idempotency)
         if (tal.badges.some((b) => b.taskTitle === task.title && b.company === company.name)) return tal;
         return {
           ...tal,
@@ -144,6 +144,19 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
       },
     ],
   })),
+
+  setActiveUser: (talentId, companyId) => set((s) => ({
+    talents: s.talents.map((t) => {
+      const shouldBeMe = t.id === talentId;
+      if (Boolean(t.isMe) === shouldBeMe) return t;
+      return { ...t, isMe: shouldBeMe || undefined };
+    }),
+    companies: s.companies.map((c) => {
+      const shouldBeMe = c.id === companyId;
+      if (Boolean(c.isMe) === shouldBeMe) return c;
+      return { ...c, isMe: shouldBeMe || undefined };
+    }),
+  })),
 }));
 
 export const MY_COMPANY_ID = myCompanyId;
@@ -154,52 +167,66 @@ export interface CompanyScore {
   companyName: string;
   mentorName: string;
   totalDecisions: number;
-  feedbackRate: number; // 0–1, % of decisions that have a tip when rejected
+  feedbackRate: number;
   avgResponseHours: number;
-  avgUsefulness: number; // 0–5
-  score: number; // composite 0–100
+  avgUsefulness: number;
+  score: number;
   isTopEmployer: boolean;
 }
 
-export const selectCompanyScores = (state: TalentFlowState): CompanyScore[] => {
-  const rows: CompanyScore[] = state.companies.map((c) => {
-    const myDecisions = state.decisions.filter((d) => d.companyId === c.id);
-    const rejections = myDecisions.filter((d) => d.outcome === "rejected");
-    const withFeedback = rejections.filter((d) => d.tip || d.note);
-    const feedbackRate = rejections.length === 0 ? 1 : withFeedback.length / rejections.length;
+// Memoized: returns the same reference when companies/decisions arrays haven't changed,
+// preventing useSyncExternalStore from detecting an unstable snapshot.
+export const selectCompanyScores = (() => {
+  let prevCompanies: Company[] | undefined;
+  let prevDecisions: Decision[] | undefined;
+  let cache: CompanyScore[] = [];
 
-    const avgResponseHours = myDecisions.length === 0
-      ? 0
-      : myDecisions.reduce((sum, d) => sum + d.responseTimeHours, 0) / myDecisions.length;
+  return (state: TalentFlowState): CompanyScore[] => {
+    if (state.companies === prevCompanies && state.decisions === prevDecisions) {
+      return cache;
+    }
 
-    const ratings = rejections.filter((d) => typeof d.usefulness === "number");
-    const avgUsefulness = ratings.length === 0
-      ? 0
-      : ratings.reduce((sum, d) => sum + (d.usefulness ?? 0), 0) / ratings.length;
+    const rows: CompanyScore[] = state.companies.map((c) => {
+      const myDecisions = state.decisions.filter((d) => d.companyId === c.id);
+      const rejections = myDecisions.filter((d) => d.outcome === "rejected");
+      const withFeedback = rejections.filter((d) => d.tip || d.note);
+      const feedbackRate = rejections.length === 0 ? 1 : withFeedback.length / rejections.length;
 
-    // Composite score (0–100): weighting feedback rate, speed, usefulness.
-    const speedScore = Math.max(0, 100 - avgResponseHours); // <1h=100, 100h=0
-    const score =
-      feedbackRate * 50 +
-      (avgUsefulness / 5) * 30 +
-      (speedScore / 100) * 20;
+      const avgResponseHours = myDecisions.length === 0
+        ? 0
+        : myDecisions.reduce((sum, d) => sum + d.responseTimeHours, 0) / myDecisions.length;
 
-    return {
-      companyId: c.id,
-      companyName: c.name,
-      mentorName: c.mentorName,
-      totalDecisions: myDecisions.length,
-      feedbackRate,
-      avgResponseHours,
-      avgUsefulness,
-      score: Math.round(score),
-      isTopEmployer: false,
-    };
-  });
+      const ratings = rejections.filter((d) => typeof d.usefulness === "number");
+      const avgUsefulness = ratings.length === 0
+        ? 0
+        : ratings.reduce((sum, d) => sum + (d.usefulness ?? 0), 0) / ratings.length;
 
-  rows.sort((a, b) => b.score - a.score);
-  if (rows.length > 0 && rows[0].totalDecisions > 0) {
-    rows[0] = { ...rows[0], isTopEmployer: true };
-  }
-  return rows;
-};
+      const speedScore = Math.max(0, 100 - avgResponseHours);
+      const score =
+        feedbackRate * 70 +
+        (speedScore / 100) * 30;
+
+      return {
+        companyId: c.id,
+        companyName: c.name,
+        mentorName: c.mentorName,
+        totalDecisions: myDecisions.length,
+        feedbackRate,
+        avgResponseHours,
+        avgUsefulness,
+        score: Math.round(score),
+        isTopEmployer: false,
+      };
+    });
+
+    rows.sort((a, b) => b.score - a.score);
+    if (rows.length > 0 && rows[0].totalDecisions > 0) {
+      rows[0] = { ...rows[0], isTopEmployer: true };
+    }
+
+    prevCompanies = state.companies;
+    prevDecisions = state.decisions;
+    cache = rows;
+    return rows;
+  };
+})();

@@ -14,54 +14,57 @@ const AVAILABILITY_OPTIONS: { value: Availability | "all"; label: string }[] = [
   { value: "soon", label: "Wkrótce" },
 ];
 
-/** Mentor view: filter and browse all talents. */
 const TalentsPage = () => {
-  const talents = useTalentFlow((s) => s.talents.filter((t) => !t.isMe));
+  const allTalents = useTalentFlow((s) => s.talents);
+  const talents = useMemo(() => allTalents.filter((t) => !t.isMe), [allTalents]);
 
   const [query, setQuery] = useState("");
-  const [skillFilter, setSkillFilter] = useState<string | null>(null);
+  const [interestFilter, setInterestFilter] = useState<string | null>(null);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [availability, setAvailability] = useState<Availability | "all">("all");
 
-  const allSkills = useMemo(() => {
+  const allInterests = useMemo(() => {
     const set = new Set<string>();
-    talents.forEach((t) => t.skills.forEach((s) => set.add(s.name)));
+    talents.forEach((t) => t.interests.forEach((i) => set.add(i)));
     return Array.from(set).sort();
   }, [talents]);
 
-  const filtered = talents.filter((t) => {
+  const filtered = useMemo(() => talents.filter((t) => {
     if (verifiedOnly && t.badges.length === 0) return false;
     if (availability !== "all" && t.availability !== availability) return false;
-    if (skillFilter && !t.skills.some((s) => s.name === skillFilter)) return false;
+    if (interestFilter && !t.interests.some((i) => i === interestFilter)) return false;
     if (query) {
       const q = query.toLowerCase();
-      if (!t.name.toLowerCase().includes(q) &&
-          !t.role.toLowerCase().includes(q) &&
-          !t.skills.some((s) => s.name.toLowerCase().includes(q))) return false;
+      if (
+        !t.name.toLowerCase().includes(q) &&
+        !t.role.toLowerCase().includes(q) &&
+        !t.interests.some((i) => i.toLowerCase().includes(q))
+      ) return false;
     }
     return true;
-  });
+  }), [talents, verifiedOnly, availability, interestFilter, query]);
 
   return (
     <div className="px-6 py-8 max-w-7xl mx-auto">
       <PageHeader
-        eyebrow="Talent Scout"
-        title="Karty talentów"
-        description="Bez CV. Bez pola 'uczelnia'. Tylko to, co kandydaci faktycznie potrafią — i odznaki, które już zdobyli."
+        eyebrow="Baza kandydatów"
+        title="Karty kandydatów"
+        description="Każda dziedzina — IT, marketing, prawo, gastronomia, medycyna i więcej. Bez CV, bez pola 'uczelnia'. Tylko zainteresowania i odznaki."
       />
 
-      {/* Filters */}
       <div className="space-y-4 mb-6">
+        {/* Search */}
         <div className="relative max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Szukaj po imieniu, roli, technologii…"
+            placeholder="Szukaj po imieniu, dziedzinie, zainteresowaniu…"
             className="pl-9"
           />
         </div>
 
+        {/* Availability + verified */}
         <div className="flex flex-wrap gap-2">
           {AVAILABILITY_OPTIONS.map((opt) => (
             <button
@@ -90,36 +93,39 @@ const TalentsPage = () => {
           </button>
         </div>
 
+        {/* Interest filter */}
         <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-          <span className="text-xs text-muted-foreground self-center mr-1">Umiejętność:</span>
+          <span className="text-xs text-muted-foreground self-center mr-1">Zainteresowanie:</span>
           <button
-            onClick={() => setSkillFilter(null)}
+            onClick={() => setInterestFilter(null)}
             className={cn(
               "px-3 py-1 rounded-full text-xs border transition",
-              !skillFilter ? "bg-primary text-primary-foreground border-primary" : "bg-surface text-muted-foreground border-border hover:text-foreground"
+              !interestFilter
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-surface text-muted-foreground border-border hover:text-foreground"
             )}
           >
-            Dowolna
+            Dowolne
           </button>
-          {allSkills.map((s) => (
+          {allInterests.map((i) => (
             <button
-              key={s}
-              onClick={() => setSkillFilter(skillFilter === s ? null : s)}
+              key={i}
+              onClick={() => setInterestFilter(interestFilter === i ? null : i)}
               className={cn(
                 "px-3 py-1 rounded-full text-xs border transition",
-                skillFilter === s
+                interestFilter === i
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-surface text-muted-foreground border-border hover:text-foreground"
               )}
             >
-              {s}
+              {i}
             </button>
           ))}
         </div>
       </div>
 
       <div className="flex items-center justify-between mb-4 text-sm text-muted-foreground">
-        <Badge variant="outline">{filtered.length} talentów</Badge>
+        <Badge variant="outline">{filtered.length} kandydatów</Badge>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -128,7 +134,7 @@ const TalentsPage = () => {
 
       {filtered.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
-          Brak talentów spełniających filtry.
+          Brak kandydatów spełniających filtry.
         </div>
       )}
     </div>

@@ -5,19 +5,13 @@
 
 export type Role = "talent" | "mentor";
 
-export interface Skill {
-  name: string;
-  /** 0–10 self-rated proficiency */
-  level: number;
-}
-
 export type Availability = "now" | "soon" | "busy";
 
 export interface Badge {
   id: string;
   /** Company that issued the badge */
   company: string;
-  /** Battle task that earned it */
+  /** Task that earned it */
   taskTitle: string;
   /** "Top X / N solutions" */
   rank: number;
@@ -30,15 +24,17 @@ export interface Talent {
   id: string;
   name: string;
   initials: string;
-  role: string; // headline e.g. "UI/UX + Frontend"
+  /** Headline / field, e.g. "Marketing & Komunikacja" */
+  role: string;
   bio: string;
   age: number;
   city: string;
   availability: Availability;
   portfolioUrl?: string;
-  skills: Skill[];
+  /** Free-text interest tags, e.g. ["marketing cyfrowy", "social media"] */
+  interests: string[];
   badges: Badge[];
-  /** Whether this is the demo user's own card (only one) */
+  /** Whether this is the demo user's own card (only one at a time) */
   isMe?: boolean;
 }
 
@@ -59,8 +55,10 @@ export interface BattleTask {
   companyId: string;
   title: string;
   brief: string;
-  reward: string; // e.g. "Verified by Mentor + 500 PLN"
+  reward: string;
   status: TaskStatus;
+  /** Industry category for filtering, e.g. "Marketing", "Prawo", "IT" */
+  industry: string;
   /** ISO due date */
   dueAt: string;
   createdAt: string;
@@ -80,8 +78,8 @@ export interface Submission {
 
 export type DecisionTip =
   | "Popracuj nad komunikacją w zespole"
-  | "Podszkol framework, którego używamy (React)"
-  | "Brak dopasowania kulturowego do zespołu"
+  | "Potrzebujesz więcej praktycznego doświadczenia w tej dziedzinie"
+  | "Brak dopasowania do aktualnych potrzeb firmy"
   | (string & {});
 
 export interface Decision {

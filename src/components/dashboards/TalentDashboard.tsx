@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Inbox, Swords, ArrowRight, Trophy } from "lucide-react";
+import { Star, Inbox, Swords, ArrowRight, Trophy, Tag } from "lucide-react";
 import { TalentCard } from "@/components/talent/TalentCard";
 
 /** Talent's home: own profile snapshot, open tasks, latest feedback, badges. */
@@ -52,13 +52,11 @@ export const TalentDashboard = () => {
           </div>
         </Card>
         <Card className="elevated p-5">
-          <div className="text-xs text-muted-foreground uppercase tracking-wider">Średnia umiejętności</div>
+          <div className="text-xs text-muted-foreground uppercase tracking-wider">Zainteresowania</div>
           <div className="mt-2 flex items-baseline gap-2">
-            <Trophy size={20} className="text-primary-glow" />
-            <span className="text-3xl font-extrabold">
-              {(me.skills.reduce((s, x) => s + x.level, 0) / me.skills.length).toFixed(1)}
-            </span>
-            <span className="text-sm text-muted-foreground">/10</span>
+            <Tag size={20} className="text-primary-glow" />
+            <span className="text-3xl font-extrabold">{me.interests.length}</span>
+            <span className="text-sm text-muted-foreground">obszarów</span>
           </div>
         </Card>
       </div>

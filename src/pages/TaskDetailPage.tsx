@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTalentFlow } from "@/store/useTalentFlow";
 import { useRole } from "@/contexts/RoleContext";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -18,7 +18,8 @@ const TaskDetailPage = () => {
   const nav = useNavigate();
   const { role } = useRole();
   const task = useTalentFlow((s) => s.tasks.find((t) => t.id === id));
-  const subs = useTalentFlow((s) => s.submissions.filter((sb) => sb.taskId === id));
+  const allSubs = useTalentFlow((s) => s.submissions);
+  const subs = useMemo(() => allSubs.filter((sb) => sb.taskId === id), [allSubs, id]);
   const talents = useTalentFlow((s) => s.talents);
   const company = useTalentFlow((s) => s.companies.find((c) => c.id === task?.companyId));
   const me = useTalentFlow((s) => s.talents.find((t) => t.isMe));
@@ -148,11 +149,12 @@ const TaskDetailPage = () => {
             </Card>
           )}
 
-          {/* All submissions */}
+          {/* All submissions — visible only to mentors */}
+          {role === "mentor" && (
           <Card className="elevated p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold">Zgłoszenia ({subs.length})</h2>
-              {role === "mentor" && isOwner && task.status !== "closed" && (
+              {isOwner && task.status !== "closed" && (
                 <Button size="sm" onClick={handleSelectTop} className="gap-2">
                   <Trophy size={14} /> Zatwierdź Top 3
                 </Button>
@@ -228,6 +230,7 @@ const TaskDetailPage = () => {
               })}
             </ul>
           </Card>
+          )}
         </div>
 
         {/* Sidebar */}

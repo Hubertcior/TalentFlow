@@ -7,18 +7,27 @@ import { Link } from "react-router-dom";
 
 interface TalentCardProps {
   talent: Talent;
-  /** Show full skills + badges (used on detail or expanded list) */
   expanded?: boolean;
 }
 
 const availabilityLabel: Record<Talent["availability"], { label: string; color: string }> = {
-  now:   { label: "Dostępna teraz",      color: "text-primary" },
-  soon:  { label: "Za 2–4 tygodnie",     color: "text-amber" },
-  busy:  { label: "Zajęta",              color: "text-muted-foreground" },
+  now:  { label: "Dostępny/a teraz", color: "text-primary" },
+  soon: { label: "Za 2–4 tygodnie",  color: "text-amber" },
+  busy: { label: "Zajęty/a",         color: "text-muted-foreground" },
 };
+
+const INTEREST_COLORS = [
+  "bg-primary/10 text-primary ring-primary/25",
+  "bg-violet/10 text-violet ring-violet/25",
+  "bg-amber/10 text-amber ring-amber/25",
+  "bg-rose/10 text-rose ring-rose/25",
+  "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 ring-cyan-500/25",
+];
 
 export const TalentCard = ({ talent, expanded }: TalentCardProps) => {
   const av = availabilityLabel[talent.availability];
+  const visibleInterests = expanded ? talent.interests : talent.interests.slice(0, 4);
+  const hiddenCount = expanded ? 0 : talent.interests.length - 4;
 
   return (
     <Card className="elevated p-6 hover:ring-1 hover:ring-primary/40 transition group animate-fade-up">
@@ -51,24 +60,29 @@ export const TalentCard = ({ talent, expanded }: TalentCardProps) => {
         )}
       </div>
 
-      {/* Skills bars */}
-      <div className="mt-5 space-y-2.5">
-        {(expanded ? talent.skills : talent.skills.slice(0, 3)).map((s) => (
-          <div key={s.name}>
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">{s.name}</span>
-              <span className="font-bold text-foreground tabular-nums">{s.level}/10</span>
-            </div>
-            <div className="mt-1 h-1.5 bg-secondary rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-brand rounded-full transition-all"
-                style={{ width: `${s.level * 10}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Interest tags */}
+      {talent.interests.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {visibleInterests.map((interest, idx) => (
+            <span
+              key={interest}
+              className={cn(
+                "text-xs rounded-full px-2.5 py-0.5 ring-1",
+                INTEREST_COLORS[idx % INTEREST_COLORS.length],
+              )}
+            >
+              {interest}
+            </span>
+          ))}
+          {hiddenCount > 0 && (
+            <span className="text-xs rounded-full px-2.5 py-0.5 ring-1 ring-border bg-surface text-muted-foreground">
+              +{hiddenCount}
+            </span>
+          )}
+        </div>
+      )}
 
+      {/* Badges section (expanded only) */}
       {expanded && talent.badges.length > 0 && (
         <div className="mt-5 rounded-lg bg-violet-soft/40 ring-1 ring-violet/40 p-4">
           <div className="flex items-center gap-2 text-violet font-bold text-sm mb-2">

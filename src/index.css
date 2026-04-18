@@ -3,12 +3,76 @@
 @tailwind utilities;
 
 /* TalentFlow design system. All colors HSL.
- * Dark-first turquoise theme inherited from the original pitch deck.
+ * Light mode is :root default; .dark overrides to dark-turquoise theme.
  */
 
 @layer base {
   :root {
-    /* App is dark-first; "light" tokens kept for any opt-in surfaces. */
+    /* Light mode */
+    --background: 0 0% 98%;
+    --foreground: 220 15% 10%;
+
+    --surface: 0 0% 95%;
+    --surface-hover: 0 0% 91%;
+    --surface-elevated: 0 0% 100%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 10%;
+
+    --primary: 158 65% 34%;
+    --primary-foreground: 0 0% 98%;
+    --primary-soft: 158 60% 92%;
+    --primary-glow: 158 70% 42%;
+
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 220 15% 10%;
+
+    --muted: 0 0% 92%;
+    --muted-foreground: 220 10% 44%;
+
+    --accent: 158 65% 34%;
+    --accent-foreground: 0 0% 98%;
+
+    --violet: 258 65% 52%;
+    --violet-soft: 258 65% 93%;
+    --amber: 38 85% 46%;
+    --amber-soft: 38 85% 93%;
+    --rose: 0 75% 52%;
+
+    --destructive: 0 70% 48%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 87%;
+    --input: 0 0% 92%;
+    --ring: 158 65% 38%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 96%;
+    --sidebar-foreground: 220 10% 28%;
+    --sidebar-primary: 158 65% 34%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 90%;
+    --sidebar-accent-foreground: 220 15% 10%;
+    --sidebar-border: 0 0% 87%;
+    --sidebar-ring: 158 65% 38%;
+
+    /* Brand gradients & shadows */
+    --gradient-brand: linear-gradient(135deg, hsl(158 65% 28%), hsl(158 70% 46%));
+    --gradient-violet: linear-gradient(135deg, hsl(258 60% 42%), hsl(258 70% 58%));
+    --gradient-amber: linear-gradient(135deg, hsl(28 85% 42%), hsl(45 90% 54%));
+    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 96%));
+
+    --shadow-glow: 0 0 40px -8px hsl(158 65% 38% / 0.28);
+    --shadow-card: 0 4px 24px -8px hsl(0 0% 0% / 0.08);
+  }
+
+  .dark {
+    color-scheme: dark;
     --background: 0 0% 6%;
     --foreground: 0 0% 96%;
 
@@ -49,9 +113,7 @@
     --input: 0 0% 14%;
     --ring: 158 70% 55%;
 
-    --radius: 0.75rem;
-
-    /* Sidebar */
+    /* Sidebar dark */
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 0 0% 75%;
     --sidebar-primary: 158 70% 45%;
@@ -61,7 +123,6 @@
     --sidebar-border: 0 0% 14%;
     --sidebar-ring: 158 70% 55%;
 
-    /* Brand gradients & shadows */
     --gradient-brand: linear-gradient(135deg, hsl(158 70% 35%), hsl(158 80% 55%));
     --gradient-violet: linear-gradient(135deg, hsl(258 60% 35%), hsl(258 80% 65%));
     --gradient-amber: linear-gradient(135deg, hsl(28 90% 45%), hsl(45 95% 60%));
@@ -69,11 +130,6 @@
 
     --shadow-glow: 0 0 40px -8px hsl(158 70% 45% / 0.5);
     --shadow-card: 0 4px 24px -8px hsl(0 0% 0% / 0.4);
-  }
-
-  /* Force a dark scheme app-wide; .dark utility kept for shadcn compat. */
-  .dark {
-    color-scheme: dark;
   }
 }
 
@@ -89,7 +145,7 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     background:
-      radial-gradient(ellipse 80% 60% at 50% -10%, hsl(158 70% 45% / 0.08), transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% -10%, hsl(var(--primary) / 0.07), transparent 60%),
       hsl(var(--background));
   }
 }

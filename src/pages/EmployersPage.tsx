@@ -2,7 +2,7 @@ import { useTalentFlow, selectCompanyScores } from "@/store/useTalentFlow";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Clock, MessageSquare, Star } from "lucide-react";
+import { Trophy, Clock, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const EmployersPage = () => {
@@ -14,7 +14,7 @@ const EmployersPage = () => {
       <PageHeader
         eyebrow="Scoring firm"
         title="Ranking pracodawców"
-        description="Algorytm: % aplikacji z konstruktywnym feedbackiem (50%) + ocena przydatności (30%) + szybkość odpowiedzi (20%). Top firma miesiąca dostaje plakietkę."
+        description="Algorytm: % odrzuceń z konstruktywnym feedbackiem (70%) + szybkość odpowiedzi (30%). Top firma miesiąca dostaje plakietkę."
       />
 
       <div className="space-y-3">
@@ -56,7 +56,6 @@ const EmployersPage = () => {
             <div className="hidden md:flex items-center gap-6 text-sm">
               <Metric icon={<MessageSquare size={14} />} label="Feedback" value={`${Math.round(s.feedbackRate * 100)}%`} />
               <Metric icon={<Clock size={14} />} label="Czas odp." value={`~${Math.round(s.avgResponseHours)}h`} />
-              <Metric icon={<Star size={14} />} label="Ocena" value={s.avgUsefulness > 0 ? `${s.avgUsefulness.toFixed(1)}/5` : "—"} />
             </div>
 
             {/* Score */}
