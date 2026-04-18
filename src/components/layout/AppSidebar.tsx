@@ -15,7 +15,9 @@ import {
   Home, Users, Swords, Inbox, BarChart3, User, ShieldCheck,
 } from "lucide-react";
 
-interface NavItem { title: string; url: string; icon: React.ComponentType<{ size?: number; className?: string }> }
+import type { LucideIcon } from "lucide-react";
+
+interface NavItem { title: string; url: string; icon: LucideIcon }
 
 const TALENT_NAV: NavItem[] = [
   { title: "Pulpit",       url: "/",         icon: Home },
