@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TalentFlow.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3d4b2064514835c6d6f839a84a0d2f72c84b7f11")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+71bbb775d91b675bfa92379d065c4e246915126d")]
 [assembly: System.Reflection.AssemblyProductAttribute("TalentFlow.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TalentFlow.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
