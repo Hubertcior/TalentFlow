@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { useEffect } from "react";
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -24,6 +28,7 @@ import DecisionsPage from "./pages/DecisionsPage.tsx";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
+<<<<<<< HEAD
   const { account, isAuthLoading } = useAuth();
   const isDataLoading = useTalentFlow((s) => s.isLoading);
 
@@ -51,6 +56,14 @@ const AppRoutes = () => {
     );
   }
 
+=======
+  const { account } = useAuth();
+  const initialize = useTalentFlow((s) => s.initialize);
+  useEffect(() => { initialize(); }, [initialize]);
+
+  if (!account) return <LoginPage />;
+
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   return (
     <BrowserRouter>
       <AppLayout>

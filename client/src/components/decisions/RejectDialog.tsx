@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ShieldCheck, Lock } from "lucide-react";
+<<<<<<< HEAD
 import { useTalentFlow } from "@/store/useTalentFlow";
+=======
+import { useTalentFlow, MY_COMPANY_ID } from "@/store/useTalentFlow";
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -32,13 +36,18 @@ interface RejectDialogProps {
 export const RejectDialog = ({ open, onOpenChange, talentId, talentName, taskId }: RejectDialogProps) => {
   const [tip, setTip] = useState<string | null>(null);
   const [custom, setCustom] = useState("");
+<<<<<<< HEAD
   const [isSending, setIsSending] = useState(false);
   const reject = useTalentFlow((s) => s.rejectTalent);
   const myCompanyId = useTalentFlow((s) => s.companies.find((c) => c.isMe)?.id ?? "");
+=======
+  const reject = useTalentFlow((s) => s.rejectTalent);
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 
   const finalTip = tip ?? (custom.trim().length >= 10 ? custom.trim() : null);
   const canSubmit = !!finalTip;
 
+<<<<<<< HEAD
   const handleReject = async () => {
     if (!finalTip) return;
     setIsSending(true);
@@ -59,6 +68,21 @@ export const RejectDialog = ({ open, onOpenChange, talentId, talentName, taskId 
     } finally {
       setIsSending(false);
     }
+=======
+  const handleReject = () => {
+    if (!finalTip) return;
+    reject(talentId, MY_COMPANY_ID, {
+      tip: finalTip,
+      note: tip ? custom.trim() || undefined : undefined,
+      taskId,
+    });
+    toast.success("Decyzja wysłana z konstruktywnym feedbackiem", {
+      description: "Kandydat dostał wskazówkę. Twój scoring firmy zaktualizowany.",
+    });
+    setTip(null);
+    setCustom("");
+    onOpenChange(false);
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   };
 
   return (
@@ -113,12 +137,20 @@ export const RejectDialog = ({ open, onOpenChange, talentId, talentName, taskId 
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Anuluj</Button>
           <Button
             onClick={handleReject}
+<<<<<<< HEAD
             disabled={!canSubmit || isSending}
+=======
+            disabled={!canSubmit}
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
             variant="destructive"
             className="gap-2"
           >
             {!canSubmit && <Lock size={14} />}
+<<<<<<< HEAD
             {isSending ? "Wysyłam…" : canSubmit ? "Wyślij odrzucenie z feedbackiem" : "Wybierz wskazówkę, by odblokować"}
+=======
+            {canSubmit ? "Wyślij odrzucenie z feedbackiem" : "Wybierz wskazówkę, by odblokować"}
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -8,7 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
+<<<<<<< HEAD
 import { ShieldOff, Plus, X, Save } from "lucide-react";
+=======
+import { ShieldOff, Plus, X } from "lucide-react";
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 
 const AVAILABILITY_LABEL = {
   now: "Dostępny/a teraz",
@@ -21,6 +25,7 @@ const ProfilePage = () => {
   const update = useTalentFlow((s) => s.updateMyTalent);
   const updateInterests = useTalentFlow((s) => s.updateMyInterests);
   const setAvailability = useTalentFlow((s) => s.setMyAvailability);
+<<<<<<< HEAD
   const saveProfile = useTalentFlow((s) => s.saveProfile);
 
   const [isSaving, setIsSaving] = useState(false);
@@ -39,12 +44,19 @@ const ProfilePage = () => {
   };
 
   const handleAddInterest = async () => {
+=======
+
+  const [newInterest, setNewInterest] = useState("");
+
+  const handleAddInterest = () => {
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
     const trimmed = newInterest.trim();
     if (!trimmed) return;
     if (me.interests.some((i) => i.toLowerCase() === trimmed.toLowerCase())) {
       toast.error("To zainteresowanie już jest na karcie");
       return;
     }
+<<<<<<< HEAD
     try {
       await updateInterests([...me.interests, trimmed]);
       setNewInterest("");
@@ -67,6 +79,14 @@ const ProfilePage = () => {
     } catch {
       toast.error("Nie udało się zmienić dostępności");
     }
+=======
+    updateInterests([...me.interests, trimmed]);
+    setNewInterest("");
+  };
+
+  const handleRemoveInterest = (idx: number) => {
+    updateInterests(me.interests.filter((_, i) => i !== idx));
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   };
 
   return (
@@ -92,6 +112,7 @@ const ProfilePage = () => {
 
       {/* Basic info */}
       <Card className="elevated p-6 mb-6">
+<<<<<<< HEAD
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">Podstawowe informacje</h2>
           <Button onClick={handleSave} disabled={isSaving} size="sm" className="gap-1.5">
@@ -99,6 +120,9 @@ const ProfilePage = () => {
             {isSaving ? "Zapisuję…" : "Zapisz zmiany"}
           </Button>
         </div>
+=======
+        <h2 className="text-lg font-bold mb-4">Podstawowe informacje</h2>
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <Label>Imię i nazwisko</Label>
@@ -143,7 +167,11 @@ const ProfilePage = () => {
             {(Object.keys(AVAILABILITY_LABEL) as Array<keyof typeof AVAILABILITY_LABEL>).map((key) => (
               <button
                 key={key}
+<<<<<<< HEAD
                 onClick={() => handleSetAvailability(key)}
+=======
+                onClick={() => setAvailability(key)}
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
                 className={
                   "px-3 py-1.5 rounded-full text-xs font-medium border transition " +
                   (me.availability === key

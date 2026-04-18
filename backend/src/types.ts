@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-/** Domain types for TalentFlow. Data is fetched from the backend API. */
-=======
 /**
  * Domain types for the TalentFlow prototype.
  * All data lives client-side in the Zustand store seeded from `mockData`.
  */
->>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 
 export type Role = "talent" | "mentor";
 

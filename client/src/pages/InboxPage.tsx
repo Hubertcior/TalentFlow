@@ -81,9 +81,14 @@ const InboxPage = () => {
                       <button
                         key={n}
                         onClick={() => {
+<<<<<<< HEAD
                           rate(d.id, n)
                             .then(() => toast.success(`Dziękujemy! Ocena: ${n}/5`))
                             .catch((err: unknown) => toast.error("Błąd: " + (err instanceof Error ? err.message : String(err))));
+=======
+                          rate(d.id, n);
+                          toast.success(`Dziękujemy! Ocena: ${n}/5`);
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
                         }}
                         className="p-1 transition hover:scale-110"
                       >

@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
+<<<<<<< HEAD
 import { useTalentFlow, selectCompanyScores } from "@/store/useTalentFlow";
+=======
+import { useTalentFlow, selectCompanyScores, MY_COMPANY_ID } from "@/store/useTalentFlow";
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,12 +18,20 @@ export const MentorDashboard = () => {
   const submissions = useTalentFlow((s) => s.submissions);
   const decisions = useTalentFlow((s) => s.decisions);
   const scores = useTalentFlow(selectCompanyScores);
+<<<<<<< HEAD
   const myCompanyId = useTalentFlow((s) => s.companies.find((c) => c.isMe)?.id);
 
   const talents = useMemo(() => allTalents.filter((t) => !t.isMe), [allTalents]);
   const myCompanyScore = scores.find((s) => s.companyId === myCompanyId);
   const myDecisions = decisions.filter((d) => d.companyId === myCompanyId);
   const myTasks = tasks.filter((t) => t.companyId === myCompanyId);
+=======
+
+  const talents = useMemo(() => allTalents.filter((t) => !t.isMe), [allTalents]);
+  const myCompanyScore = scores.find((s) => s.companyId === MY_COMPANY_ID);
+  const myDecisions = decisions.filter((d) => d.companyId === MY_COMPANY_ID);
+  const myTasks = tasks.filter((t) => t.companyId === MY_COMPANY_ID);
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   const judging = myTasks.find((t) => t.status === "judging") ?? myTasks.find((t) => t.status === "open");
 
   const topPicks = useMemo(

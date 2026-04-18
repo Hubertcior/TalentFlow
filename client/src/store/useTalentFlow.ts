@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type {
   Talent, Company, BattleTask, Submission, Decision, Availability,
 } from "@/types/domain";
+<<<<<<< HEAD
 import { api, type TalentDto, type CompanyDto, type TaskDto, type SubmissionDto, type DecisionDto } from "@/api";
 
 // ── DTO → Domain mappers ──────────────────────────────────────────────────────
@@ -76,6 +77,9 @@ function mapDecision(dto: DecisionDto): Decision {
 }
 
 // ── Store ─────────────────────────────────────────────────────────────────────
+=======
+import { api } from "@/api/client";
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 
 interface TalentFlowState {
   talents: Talent[];
@@ -83,6 +87,7 @@ interface TalentFlowState {
   tasks: BattleTask[];
   submissions: Submission[];
   decisions: Decision[];
+<<<<<<< HEAD
   isLoading: boolean;
 
   // Bootstrap
@@ -94,6 +99,16 @@ interface TalentFlowState {
   updateMyInterests: (interests: string[]) => Promise<void>;
   setMyAvailability: (a: Availability) => Promise<void>;
   saveProfile: () => Promise<void>;
+=======
+  initialized: boolean;
+
+  initialize: () => Promise<void>;
+
+  // Talent actions
+  updateMyTalent: (patch: Partial<Pick<Talent, "name" | "role" | "bio" | "city" | "availability" | "portfolioUrl">>) => Promise<void>;
+  updateMyInterests: (interests: string[]) => Promise<void>;
+  setMyAvailability: (a: Availability) => Promise<void>;
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 
   submitToTask: (taskId: string, summary: string, link?: string) => Promise<void>;
   rateDecision: (decisionId: string, usefulness: number) => Promise<void>;
@@ -113,6 +128,7 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
   tasks: [],
   submissions: [],
   decisions: [],
+<<<<<<< HEAD
   isLoading: false,
 
   initData: async () => {
@@ -235,6 +251,113 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
   rejectTalent: async (talentId, companyId, { tip, note, taskId }) => {
     const dto = await api.decisions.create({ talentId, companyId, taskId, outcome: "Rejected", tip, note });
     set((s) => ({ decisions: [mapDecision(dto), ...s.decisions] }));
+=======
+  initialized: false,
+
+  initialize: async () => {
+    if (get().initialized) return;
+    const data = await api.getSeed();
+    set({ ...data, initialized: true });
+  },
+
+  updateMyTalent: async (patch) => {
+    const me = get().talents.find((t) => t.isMe);
+    if (!me) return;
+    set((s) => ({ talents: s.talents.map((t) => (t.isMe ? { ...t, ...patch } : t)) }));
+    await api.updateTalent(me.id, patch).catch(console.error);
+  },
+
+  updateMyInterests: async (interests) => {
+    const me = get().talents.find((t) => t.isMe);
+    if (!me) return;
+    set((s) => ({ talents: s.talents.map((t) => (t.isMe ? { ...t, interests } : t)) }));
+    await api.updateTalent(me.id, { interests }).catch(console.error);
+  },
+
+  setMyAvailability: async (availability) => {
+    const me = get().talents.find((t) => t.isMe);
+    if (!me) return;
+    set((s) => ({ talents: s.talents.map((t) => (t.isMe ? { ...t, availability } : t)) }));
+    await api.updateTalent(me.id, { availability }).catch(console.error);
+  },
+
+  submitToTask: async (taskId, summary, link) => {
+    const me = get().talents.find((t) => t.isMe);
+    if (!me) return;
+    const submittedAt = new Date().toISOString();
+    const optimistic: Submission = { id: `s-${Date.now()}`, taskId, talentId: me.id, summary, link, submittedAt };
+    set((s) => ({
+      submissions: [
+        ...s.submissions.filter((x) => !(x.taskId === taskId && x.talentId === me.id)),
+        optimistic,
+      ],
+    }));
+    try {
+      const created = await api.createSubmission({ taskId, talentId: me.id, summary, link, submittedAt });
+      set((s) => ({ submissions: s.submissions.map((x) => (x.id === optimistic.id ? created : x)) }));
+    } catch (e) { console.error(e); }
+  },
+
+  rateDecision: async (decisionId, usefulness) => {
+    set((s) => ({ decisions: s.decisions.map((d) => (d.id === decisionId ? { ...d, usefulness } : d)) }));
+    await api.updateDecision(decisionId, { usefulness }).catch(console.error);
+  },
+
+  selectTopThree: async (taskId, top) => {
+    const state = get();
+    const updatedSubs = state.submissions.map((sub) => {
+      if (sub.taskId !== taskId) return sub;
+      const found = top.find((t) => t.id === sub.id);
+      return { ...sub, rank: found?.rank };
+    });
+    const task = state.tasks.find((t) => t.id === taskId);
+    let updatedTalents = state.talents;
+    if (task) {
+      const company = state.companies.find((c) => c.id === task.companyId);
+      const totalEntries = updatedSubs.filter((x) => x.taskId === taskId).length;
+      const winnerSubs = updatedSubs.filter((x) => x.taskId === taskId && x.rank);
+      updatedTalents = state.talents.map((tal) => {
+        const winner = winnerSubs.find((w) => w.talentId === tal.id);
+        if (!winner || !company) return tal;
+        if (tal.badges.some((b) => b.taskTitle === task.title && b.company === company.name)) return tal;
+        return {
+          ...tal,
+          badges: [
+            ...tal.badges,
+            { id: `b-${Date.now()}-${tal.id}`, company: company.name, taskTitle: task.title, rank: winner.rank!, total: totalEntries, awardedAt: new Date().toISOString() },
+          ],
+        };
+      });
+    }
+    const updatedTasks = state.tasks.map((t) => (t.id === taskId ? { ...t, status: "closed" as const } : t));
+    set({ submissions: updatedSubs, talents: updatedTalents, tasks: updatedTasks });
+    try {
+      await Promise.all([
+        ...top.map(({ id, rank }) => api.updateSubmission(id, { rank })),
+        api.updateTask(taskId, { status: "closed" }),
+      ]);
+    } catch (e) { console.error(e); }
+  },
+
+  acceptTalent: async (talentId, companyId, taskId) => {
+    const now = new Date().toISOString();
+    const optimistic: Decision = { id: `d-${Date.now()}`, talentId, companyId, taskId, outcome: "accepted", createdAt: now, responseTimeHours: 24 };
+    set((s) => ({ decisions: [...s.decisions, optimistic] }));
+    try {
+      const created = await api.createDecision({ talentId, companyId, taskId, outcome: "accepted", createdAt: now, responseTimeHours: 24 });
+      set((s) => ({ decisions: s.decisions.map((d) => (d.id === optimistic.id ? created : d)) }));
+    } catch (e) { console.error(e); }
+  },
+
+  rejectTalent: async (talentId, companyId, { tip, note, taskId }) => {
+    const now = new Date().toISOString();
+    const optimistic: Decision = { id: `d-${Date.now()}`, talentId, companyId, taskId, outcome: "rejected", tip, note, createdAt: now, responseTimeHours: 24 };
+    set((s) => ({ decisions: [...s.decisions, optimistic] }));
+    try {
+      const created = await api.createDecision({ talentId, companyId, taskId, outcome: "rejected", tip, note, createdAt: now, responseTimeHours: 24 });
+      set((s) => ({ decisions: s.decisions.map((d) => (d.id === optimistic.id ? created : d)) }));
+    } catch (e) { console.error(e); }
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
   },
 
   setActiveUser: (talentId, companyId) => set((s) => ({
@@ -251,8 +374,14 @@ export const useTalentFlow = create<TalentFlowState>((set, get) => ({
   })),
 }));
 
+<<<<<<< HEAD
 // ── Derived: company leaderboard ──────────────────────────────────────────────
 
+=======
+export const MY_COMPANY_ID = "c-me";
+
+/** Derived: mentor scoring for the leaderboard. */
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 export interface CompanyScore {
   companyId: string;
   companyName: string;
@@ -265,7 +394,12 @@ export interface CompanyScore {
   isTopEmployer: boolean;
 }
 
+<<<<<<< HEAD
 // Memoized: returns the same reference when inputs haven't changed
+=======
+// Memoized: returns the same reference when companies/decisions arrays haven't changed,
+// preventing useSyncExternalStore from detecting an unstable snapshot.
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 export const selectCompanyScores = (() => {
   let prevCompanies: Company[] | undefined;
   let prevDecisions: Decision[] | undefined;
@@ -282,6 +416,7 @@ export const selectCompanyScores = (() => {
       const withFeedback = rejections.filter((d) => d.tip || d.note);
       const feedbackRate = rejections.length === 0 ? 1 : withFeedback.length / rejections.length;
 
+<<<<<<< HEAD
       const avgResponseHours =
         myDecisions.length === 0
           ? 0
@@ -295,6 +430,21 @@ export const selectCompanyScores = (() => {
 
       const speedScore = Math.max(0, 100 - avgResponseHours);
       const score = feedbackRate * 70 + (speedScore / 100) * 30;
+=======
+      const avgResponseHours = myDecisions.length === 0
+        ? 0
+        : myDecisions.reduce((sum, d) => sum + d.responseTimeHours, 0) / myDecisions.length;
+
+      const ratings = rejections.filter((d) => typeof d.usefulness === "number");
+      const avgUsefulness = ratings.length === 0
+        ? 0
+        : ratings.reduce((sum, d) => sum + (d.usefulness ?? 0), 0) / ratings.length;
+
+      const speedScore = Math.max(0, 100 - avgResponseHours);
+      const score =
+        feedbackRate * 70 +
+        (speedScore / 100) * 30;
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
 
       return {
         companyId: c.id,
@@ -319,4 +469,8 @@ export const selectCompanyScores = (() => {
     cache = rows;
     return rows;
   };
+<<<<<<< HEAD
 })();
+=======
+})();
+>>>>>>> 16fa846829754b5880229515a4d7bd00a7c354b6
