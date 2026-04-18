@@ -162,7 +162,7 @@ export interface CompanyScore {
 }
 
 export const selectCompanyScores = (state: TalentFlowState): CompanyScore[] => {
-  const rows = state.companies.map((c) => {
+  const rows: CompanyScore[] = state.companies.map((c) => {
     const myDecisions = state.decisions.filter((d) => d.companyId === c.id);
     const rejections = myDecisions.filter((d) => d.outcome === "rejected");
     const withFeedback = rejections.filter((d) => d.tip || d.note);
@@ -194,7 +194,7 @@ export const selectCompanyScores = (state: TalentFlowState): CompanyScore[] => {
       avgUsefulness,
       score: Math.round(score),
       isTopEmployer: false,
-    } satisfies CompanyScore;
+    };
   });
 
   rows.sort((a, b) => b.score - a.score);
